@@ -4,33 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}</ProjectGuid>
+    <ProjectGuid>{204A6E21-312C-47E4-BAA4-D2C66EE88B86}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TestCLR</RootNamespace>
-    <AssemblyName>TestCLR</AssemblyName>
+    <RootNamespace>MetaheuristicsCS</RootNamespace>
+    <AssemblyName>MetaheuristicsCS</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -54,7 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\x86\Debug\</OutputPath>
+    <OutputPath>..\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -63,7 +44,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>..\x86\Release\</OutputPath>
+    <OutputPath>..\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -83,8 +64,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Generations\AGeneration.cs" />
+    <Compile Include="Generations\BinaryRandomGeneration.cs" />
+    <Compile Include="Generations\RealRandomGeneration.cs" />
+    <Compile Include="MetaheuristicsCS.cs" />
+    <Compile Include="Mutations\ARandomMutation.cs" />
+    <Compile Include="Mutations\ARealMutationES11Adaptation.cs" />
+    <Compile Include="Mutations\BinaryBitFlipMutation.cs" />
+    <Compile Include="Mutations\IMutation.cs" />
+    <Compile Include="Mutations\NullMutation.cs" />
+    <Compile Include="Mutations\RealGaussianMutation.cs" />
+    <Compile Include="Mutations\RealNullRealMutationES11Adaptation.cs" />
+    <Compile Include="Mutations\RealOneFifthRuleMutationES11Adaptation.cs" />
+    <Compile Include="Optimizers\AOptimizer.cs" />
+    <Compile Include="Optimizers\BinaryRandomSearch.cs" />
+    <Compile Include="Optimizers\OptimizationResult.cs" />
+    <Compile Include="Optimizers\RealEvolutionStrategy11.cs" />
+    <Compile Include="Optimizers\RealRandomSearch.cs" />
+    <Compile Include="Optimizers\SamplingOptimizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StopConditions\AStopCondition.cs" />
+    <Compile Include="StopConditions\FFEStopCondition.cs" />
+    <Compile Include="StopConditions\IterationsStopCondition.cs" />
+    <Compile Include="StopConditions\RunningTimeStopCondition.cs" />
+    <Compile Include="Utility\ASeedableRandom.cs" />
+    <Compile Include="Utility\BoolRandom.cs" />
+    <Compile Include="Utility\NormalRealRandom.cs" />
+    <Compile Include="Utility\TimeUtils.cs" />
+    <Compile Include="Utility\UniformRealRandom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -95,5 +102,6 @@
       <Name>MetaheuristicsCLI.Evaluations</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

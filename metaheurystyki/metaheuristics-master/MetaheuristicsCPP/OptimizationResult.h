@@ -17,7 +17,7 @@ namespace Optimizers
 		}//COptimizationResult(double dBestValue, vector<TElement> vBestSolution, long long iBestIteration, long long iBestFFE, double dBestTime)
 
 		double dGetBestValue() { return d_best_value; }
-		vector<TElement> &cGetBestSolution() { return v_best_solution; }
+		vector<TElement> &vGetBestSolution() { return v_best_solution; }
 
 		long long iGetBestIteration() { return i_best_iteration; }
 		long long iGetBestFFE() { return i_best_ffe; }

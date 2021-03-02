@@ -54,7 +54,7 @@ CBinaryBimodalDeceptiveConcatenationEvaluation::CBinaryBimodalDeceptiveConcatena
 
 
 CBinaryIsingSpinGlassEvaluation::CBinaryIsingSpinGlassEvaluation(int iSize)
-	: CBinaryIsingSpinGlassEvaluation(iSize, 0)
+	: CBinaryEvaluation(new Evaluations::CBinaryIsingSpinGlassEvaluation(iSize))
 {
 
 }//CBinaryIsingSpinGlassEvaluation::CBinaryIsingSpinGlassEvaluation(int iSize)
@@ -66,8 +66,27 @@ CBinaryIsingSpinGlassEvaluation::CBinaryIsingSpinGlassEvaluation(int iSize, int 
 }//CBinaryIsingSpinGlassEvaluation::CBinaryIsingSpinGlassEvaluation(int iSize, int iProblemSeed)
 
 
+CBinaryMax3SatEvaluation::CBinaryMax3SatEvaluation(int iSize)
+	: CBinaryEvaluation(new Evaluations::CBinaryMax3SatEvaluation(iSize))
+{
+
+}//CBinaryMax3SatEvaluation::CBinaryMax3SatEvaluation(int iSize)
+
+CBinaryMax3SatEvaluation::CBinaryMax3SatEvaluation(int iSize, int iProblemSeed)
+	: CBinaryEvaluation(new Evaluations::CBinaryMax3SatEvaluation(iSize, iProblemSeed))
+{
+
+}//CBinaryMax3SatEvaluation::CBinaryMax3SatEvaluation(int iSize, int iProblemSeed)
+
+CBinaryMax3SatEvaluation::CBinaryMax3SatEvaluation(int iSize, int iProblemSeed, float fClauseRatio)
+	: CBinaryEvaluation(new Evaluations::CBinaryMax3SatEvaluation(iSize, iProblemSeed, fClauseRatio))
+{
+
+}//CBinaryMax3SatEvaluation::CBinaryMax3SatEvaluation(int iSize, int iProblemSeed, float fClauseRatio)
+
+
 CBinaryNKLandscapesEvaluation::CBinaryNKLandscapesEvaluation(int iSize)
-	: CBinaryNKLandscapesEvaluation(iSize, 0)
+	: CBinaryEvaluation(new Evaluations::CBinaryNKLandscapesEvaluation(iSize))
 {
 
 }//CBinaryNKLandscapesEvaluation::CBinaryNKLandscapesEvaluation(int iSize)

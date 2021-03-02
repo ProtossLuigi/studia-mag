@@ -38,6 +38,9 @@ namespace Evaluations
 	public:
 		CEvaluation(int iSize, double dMaxValue) : i_size(iSize), d_max_value(dMaxValue), i_ffe(0) { }
 
+		CEvaluation(const CEvaluation<TElement> &cOther) = delete;
+		CEvaluation(CEvaluation<TElement> &&cOther) = delete;
+
 		virtual double dEvaluate(vector<TElement> &vSolution) final
 		{
 			double d_value = d_evaluate(vSolution);
@@ -49,6 +52,9 @@ namespace Evaluations
 		virtual int iGetSize() { return i_size; }
 		virtual double dGetMaxValue() { return d_max_value; }
 		virtual long long iGetFFE() { return i_ffe; }
+
+		CEvaluation<TElement>& operator=(const CEvaluation<TElement> &cOther) = delete;
+		CEvaluation<TElement>& operator=(CEvaluation<TElement> &&cOther) = delete;
 
 	protected:
 		virtual double d_evaluate(vector<TElement> &vSolution) = 0;

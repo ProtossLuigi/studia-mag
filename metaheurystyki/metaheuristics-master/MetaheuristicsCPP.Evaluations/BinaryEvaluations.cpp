@@ -134,6 +134,30 @@ double CBinaryIsingSpinGlassEvaluation::d_evaluate(vector<bool> &vSolution)
 }//double CBinaryIsingSpinGlassEvaluation::d_evaluate(vector<bool> &vSolution)
 
 
+CBinaryMax3SatEvaluation::CBinaryMax3SatEvaluation(int iSize, int iProblemSeed, float fClauseRatio)
+	: CBinaryEvaluation(iSize, 1.0)
+{
+	Configuration c_config;
+
+	c_config.set("length", iSize);
+	c_config.set("precision", 65536);
+	c_config.set("problem_seed", iProblemSeed);
+	c_config.set("clause_ratio", fClauseRatio);
+
+	pc_p3_max_sat = new MAXSAT(c_config, 0);
+}//CBinaryMax3SatEvaluation::CBinaryMax3SatEvaluation(int iSize, int iProblemSeed, float fClauseRatio)
+
+CBinaryMax3SatEvaluation::~CBinaryMax3SatEvaluation()
+{
+	delete pc_p3_max_sat;
+}//CBinaryMax3SatEvaluation::~CBinaryMax3SatEvaluation()
+
+double CBinaryMax3SatEvaluation::d_evaluate(vector<bool> &vSolution)
+{
+	return pc_p3_max_sat->evaluate(vSolution);
+}//double CBinaryMax3SatEvaluation::d_evaluate(vector<bool> &vSolution)
+
+
 CBinaryNKLandscapesEvaluation::CBinaryNKLandscapesEvaluation(int iSize, int iProblemSeed)
 	: CBinaryEvaluation(iSize, 1.0)
 {

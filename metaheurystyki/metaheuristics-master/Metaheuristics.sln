@@ -12,7 +12,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetaheuristicsCLI.Evaluatio
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetaheuristicsCPP.Evaluations", "MetaheuristicsCPP.Evaluations\MetaheuristicsCPP.Evaluations.vcxproj", "{57DA5D67-839E-4B20-8434-E0DAAC632F0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCLI", "TestCLI\TestCLI.csproj", "{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetaheuristicsCS", "MetaheuristicsCS\MetaheuristicsCS.csproj", "{204A6E21-312C-47E4-BAA4-D2C66EE88B86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,14 +46,14 @@ Global
 		{57DA5D67-839E-4B20-8434-E0DAAC632F0B}.Release|x64.Build.0 = Release|x64
 		{57DA5D67-839E-4B20-8434-E0DAAC632F0B}.Release|x86.ActiveCfg = Release|Win32
 		{57DA5D67-839E-4B20-8434-E0DAAC632F0B}.Release|x86.Build.0 = Release|Win32
-		{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}.Debug|x64.ActiveCfg = Debug|x64
-		{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}.Debug|x64.Build.0 = Debug|x64
-		{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}.Debug|x86.ActiveCfg = Debug|x86
-		{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}.Debug|x86.Build.0 = Debug|x86
-		{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}.Release|x64.ActiveCfg = Release|x64
-		{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}.Release|x64.Build.0 = Release|x64
-		{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}.Release|x86.ActiveCfg = Release|x86
-		{C80BEE23-ECBB-4ABD-9F15-B64ABB2406F9}.Release|x86.Build.0 = Release|x86
+		{204A6E21-312C-47E4-BAA4-D2C66EE88B86}.Debug|x64.ActiveCfg = Debug|x64
+		{204A6E21-312C-47E4-BAA4-D2C66EE88B86}.Debug|x64.Build.0 = Debug|x64
+		{204A6E21-312C-47E4-BAA4-D2C66EE88B86}.Debug|x86.ActiveCfg = Debug|x86
+		{204A6E21-312C-47E4-BAA4-D2C66EE88B86}.Debug|x86.Build.0 = Debug|x86
+		{204A6E21-312C-47E4-BAA4-D2C66EE88B86}.Release|x64.ActiveCfg = Release|x64
+		{204A6E21-312C-47E4-BAA4-D2C66EE88B86}.Release|x64.Build.0 = Release|x64
+		{204A6E21-312C-47E4-BAA4-D2C66EE88B86}.Release|x86.ActiveCfg = Release|x86
+		{204A6E21-312C-47E4-BAA4-D2C66EE88B86}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

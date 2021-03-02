@@ -42,8 +42,8 @@ namespace Optimizers
 			pc_result = nullptr;
 		}//COptimizer(IEvaluation<TElement> &cEvaluation, IStopCondition &cStopCondition)
 
-		//copy constructor
-		//move semantics
+		COptimizer(const COptimizer<TElement> &cOther) = delete;
+		COptimizer(COptimizer<TElement> &&cOther) = delete;
 
 		virtual ~COptimizer()
 		{
@@ -87,6 +87,9 @@ namespace Optimizers
 		}//virtual void vRun()
 
 		virtual COptimizationResult<TElement> *pcGetResult() { return pc_result; }
+
+		COptimizer<TElement>& operator=(const COptimizer<TElement> &cOther) = delete;
+		COptimizer<TElement>& operator=(COptimizer<TElement> &&cOther) = delete;
 
 	protected:
 		virtual void v_initialize(clock_t tStartTime) = 0;

@@ -73,6 +73,15 @@ namespace EvaluationsCLI
 	};//public ref class CBinaryIsingSpinGlassEvaluation : public CBinaryEvaluation
 
 
+	public ref class CBinaryMax3SatEvaluation : public CBinaryEvaluation
+	{
+	public:
+		CBinaryMax3SatEvaluation(int iSize);
+		CBinaryMax3SatEvaluation(int iSize, int iProblemSeed);
+		CBinaryMax3SatEvaluation(int iSize, int iProblemSeed, float fClauseRatio);
+	};//public ref class CBinaryMax3SatEvaluation : public CBinaryEvaluation
+
+
 	public ref class CBinaryNKLandscapesEvaluation : public CBinaryEvaluation
 	{
 	public:

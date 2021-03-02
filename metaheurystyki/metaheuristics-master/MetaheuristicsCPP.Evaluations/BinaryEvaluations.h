@@ -87,6 +87,21 @@ namespace Evaluations
 	};//class CBinaryIsingSpinGlassEvaluation : public CBinaryEvaluation
 
 
+	class CBinaryMax3SatEvaluation : public CBinaryEvaluation
+	{
+	public:
+		CBinaryMax3SatEvaluation(int iSize, int iProblemSeed = 0, float fClauseRatio = 4.27f);
+
+		virtual ~CBinaryMax3SatEvaluation();
+
+	protected:
+		virtual double d_evaluate(vector<bool> &vSolution);
+
+	private:
+		MAXSAT *pc_p3_max_sat;
+	};//class CBinaryMax3SatEvaluation : public CBinaryEvaluation
+
+
 	class CBinaryNKLandscapesEvaluation : public CBinaryEvaluation
 	{
 	public:

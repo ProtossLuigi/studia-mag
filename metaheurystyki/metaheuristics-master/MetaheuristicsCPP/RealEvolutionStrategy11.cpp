@@ -22,12 +22,12 @@ bool CRealEvolutionStrategy11::b_run_iteration(long long iIterationNumber, clock
 {
 	CRealGaussianMutation &c_mutation = c_mutation_adaptation.cGetMutation();
 
-	vector<double> v_candidate_solution(pcGetResult()->cGetBestSolution());
+	vector<double> v_candidate_solution(pcGetResult()->vGetBestSolution());
 
 	c_mutation.bMutate(v_candidate_solution);
 	double d_candidate_value = c_evaluation.dEvaluate(v_candidate_solution);
 
-	c_mutation_adaptation.vAdapt(pcGetResult()->dGetBestValue(), pcGetResult()->cGetBestSolution(), d_candidate_value, v_candidate_solution);
+	c_mutation_adaptation.vAdapt(pcGetResult()->dGetBestValue(), pcGetResult()->vGetBestSolution(), d_candidate_value, v_candidate_solution);
 
 	return b_check_new_best(v_candidate_solution, d_candidate_value);
 }//bool CRealEvolutionStrategy11::b_run_iteration(long long iIterationNumber, clock_t tStartTime)
