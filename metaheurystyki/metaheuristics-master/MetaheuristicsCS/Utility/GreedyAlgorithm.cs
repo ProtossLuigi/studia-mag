@@ -19,13 +19,16 @@ namespace Utility
         public List<bool> Greedy(List<bool> solution)
         {
             List<int> order = GenerateRandomOrder();
+            double bestFitness = evaluation.dEvaluate(solution);
             foreach(int i in order)
             {
                 List<bool> newSolution = new List<bool>(solution);
                 newSolution[i] = !newSolution[i];
-                if(evaluation.dEvaluate(newSolution) > evaluation.dEvaluate(solution))
+                double newFitness = evaluation.dEvaluate(newSolution);
+                if(newFitness > bestFitness)
                 {
                     solution = newSolution;
+                    bestFitness = newFitness;
                 }
             }
             return solution;

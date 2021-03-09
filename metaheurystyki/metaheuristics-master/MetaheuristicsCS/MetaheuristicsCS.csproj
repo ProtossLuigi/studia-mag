@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generations\AGeneration.cs" />
+    <Compile Include="Generations\BinaryGreedyRandomGeneration.cs" />
     <Compile Include="Generations\BinaryRandomGeneration.cs" />
     <Compile Include="Generations\RealRandomGeneration.cs" />
     <Compile Include="MetaheuristicsCS.cs" />

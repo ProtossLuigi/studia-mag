@@ -10,25 +10,9 @@ using System.Threading.Tasks;
 
 namespace Optimizers
 {
-    class GreedyRS : AOptimizer<bool>
+    class GreedyRS : SamplingOptimizer<bool>
     {
-        BinaryRandomGeneration brg;
-
-        public GreedyRS(IEvaluation<bool> evaluation, AStopCondition stopCondition, int? seed = null)
-            : base(evaluation, stopCondition)
-        {
-            brg = new BinaryRandomGeneration(evaluation.pcConstraint, seed);
-        }
-
-
-        protected override void Initialize(DateTime startTime)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override bool RunIteration(long itertionNumber, DateTime startTime)
-        {
-            throw new NotImplementedException();
-        }
+        public GreedyRS(IEvaluation<bool> evaluation, AStopCondition stopCondition, int? greedyIterations = null, int? seed = null)
+            : base(evaluation, stopCondition, new BinaryGreedyRandomGeneration(evaluation, greedyIterations, seed)) { }
     }
 }
