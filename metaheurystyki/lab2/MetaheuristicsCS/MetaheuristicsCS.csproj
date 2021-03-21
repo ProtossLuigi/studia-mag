@@ -74,6 +74,7 @@
     <Compile Include="Mutations\IMutation.cs" />
     <Compile Include="Mutations\NullMutation.cs" />
     <Compile Include="Mutations\RealGaussianMutation.cs" />
+    <Compile Include="Mutations\RealJumpingRealMutationES11Adaptation.cs" />
     <Compile Include="Mutations\RealNullRealMutationES11Adaptation.cs" />
     <Compile Include="Mutations\RealOneFifthRuleMutationES11Adaptation.cs" />
     <Compile Include="Optimizers\AOptimizer.cs" />

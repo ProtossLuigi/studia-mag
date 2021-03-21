@@ -19,9 +19,9 @@ namespace MetaheuristicsCS
             Console.WriteLine("\twhen (FFE): {0}", optimizationResult.BestFFE);
         }
 
-        private static void Lab2Sphere(int? seed)
+        private static void Lab2Sphere(int? seed, int variables)
         {
-            CRealSphereEvaluation sphereEvaluation = new CRealSphereEvaluation(2);
+            CRealSphereEvaluation sphereEvaluation = new CRealSphereEvaluation(variables);
 
             List<double> sigmas = Enumerable.Repeat(0.1, sphereEvaluation.iSize).ToList();
 
@@ -36,9 +36,9 @@ namespace MetaheuristicsCS
             ReportOptimizationResult(es11.Result);
         }
 
-        private static void Lab2Sphere10(int? seed)
+        private static void Lab2Sphere10(int? seed, int variables)
         {
-            CRealSphere10Evaluation sphere10Evaluation = new CRealSphere10Evaluation(2);
+            CRealSphere10Evaluation sphere10Evaluation = new CRealSphere10Evaluation(variables);
 
             List<double> sigmas = Enumerable.Repeat(0.1, sphere10Evaluation.iSize).ToList();
 
@@ -53,9 +53,9 @@ namespace MetaheuristicsCS
             ReportOptimizationResult(es11.Result);
         }
 
-        private static void Lab2Ellipsoid(int? seed)
+        private static void Lab2Ellipsoid(int? seed, int variables)
         {
-            CRealEllipsoidEvaluation ellipsoidEvaluation = new CRealEllipsoidEvaluation(2);
+            CRealEllipsoidEvaluation ellipsoidEvaluation = new CRealEllipsoidEvaluation(variables);
 
             List<double> sigmas = Enumerable.Repeat(0.1, ellipsoidEvaluation.iSize).ToList();
 
@@ -70,9 +70,9 @@ namespace MetaheuristicsCS
             ReportOptimizationResult(es11.Result);
         }
 
-        private static void Lab2Step2Sphere(int? seed)
+        private static void Lab2Step2Sphere(int? seed, int variables)
         {
-            CRealStep2SphereEvaluation step2SphereEvaluation = new CRealStep2SphereEvaluation(2);
+            CRealStep2SphereEvaluation step2SphereEvaluation = new CRealStep2SphereEvaluation(variables);
 
             List<double> sigmas = Enumerable.Repeat(0.1, step2SphereEvaluation.iSize).ToList();
 
@@ -126,10 +126,18 @@ namespace MetaheuristicsCS
         {
             int? seed = null;
 
-            Lab2Sphere(seed);
-            Lab2Sphere10(seed);
-            Lab2Ellipsoid(seed);
-            Lab2Step2Sphere(seed);
+            Lab2Sphere(seed, 2);
+            Lab2Sphere(seed, 5);
+            Lab2Sphere(seed, 10);
+            Lab2Sphere10(seed, 2);
+            Lab2Sphere10(seed, 5);
+            Lab2Sphere10(seed, 10);
+            Lab2Ellipsoid(seed, 2);
+            Lab2Ellipsoid(seed, 5);
+            Lab2Ellipsoid(seed, 10);
+            Lab2Step2Sphere(seed, 2);
+            Lab2Step2Sphere(seed, 5);
+            Lab2Step2Sphere(seed, 10);
         }
     }
 }
