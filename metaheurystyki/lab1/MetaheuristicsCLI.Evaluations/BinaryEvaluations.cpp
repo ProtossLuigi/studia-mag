@@ -3,10 +3,10 @@
 using namespace EvaluationsCLI;
 
 
-CBinaryEvaluation::CBinaryEvaluation(Evaluations::CEvaluation<bool> *pcNativeBinaryEvaluation)
+CBinaryEvaluation::CBinaryEvaluation(Evaluations::IEvaluation<bool> *pcNativeBinaryEvaluation)
 {
 	pc_native_binary_evaluation = pcNativeBinaryEvaluation;
-}//CBinaryEvaluation::CBinaryEvaluation(Evaluations::CEvaluation<bool> *pcNativeBinaryEvaluation)
+}//CBinaryEvaluation::CBinaryEvaluation(Evaluations::IEvaluation<bool> *pcNativeBinaryEvaluation)
 
 CBinaryEvaluation::~CBinaryEvaluation()
 {

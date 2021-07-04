@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using EvaluationsCLI;
+using MetaheuristicsCS.Optimizers;
 using Mutations;
 using Optimizers;
 using StopConditions;
@@ -11,12 +14,146 @@ namespace MetaheuristicsCS
 {
     class MetaheuristicsCS
     {
+        private static Object lockObj = new Object();
+        private static int totalCounter = 0;
+        private static int progressCounter = 0;
+
         private static void ReportOptimizationResult<Element>(OptimizationResult<Element> optimizationResult)
         {
             Console.WriteLine("value: {0}", optimizationResult.BestValue);
             Console.WriteLine("\twhen (time): {0}s", optimizationResult.BestTime);
             Console.WriteLine("\twhen (iteration): {0}", optimizationResult.BestIteration);
             Console.WriteLine("\twhen (FFE): {0}", optimizationResult.BestFFE);
+        }
+
+        private static string ResultToString(string info, string method, OptimizationResult<double> result)
+        {
+            return info + ";" + method + ";" + result.BestValue.ToString() + ";" + result.BestTime.ToString() + ";" + result.BestIteration.ToString() + ";" + result.BestFFE.ToString();
+        }
+
+        private static string RunExperiment(IEvaluation<double> evaluation, string method, string problemInfo, int maxIterations, int parameter, int? seed = null)
+        {
+            lock (evaluation)
+            {
+                IterationsStopCondition stopCondition = new IterationsStopCondition(evaluation.dMaxValue, maxIterations);
+
+                if (method == "RS")
+                {
+                    RealRandomSearch rs = new RealRandomSearch(evaluation, stopCondition, seed);
+                    rs.Run();
+                    return ResultToString(problemInfo, method, rs.Result);
+                }
+                else if (method == "ES11")
+                {
+                    List<double> sigmas = Enumerable.Repeat(0.1, evaluation.iSize).ToList();
+                    RealGaussianMutation mutation = new RealGaussianMutation(sigmas, evaluation, seed);
+                    RealNullRealMutationES11Adaptation mutationAdaptation = new RealNullRealMutationES11Adaptation(mutation);
+
+                    RealEvolutionStrategy11 es11 = new RealEvolutionStrategy11(evaluation, stopCondition, mutationAdaptation, seed);
+
+                    es11.Run();
+
+                    return ResultToString(problemInfo, method, es11.Result);
+                }
+                else if (method == "RestartingES11")
+                {
+                    List<double> sigmas = Enumerable.Repeat(0.1, evaluation.iSize).ToList();
+                    RealGaussianMutation mutation = new RealGaussianMutation(sigmas, evaluation, seed);
+                    RealNullRealMutationES11Adaptation mutationAdaptation = new RealNullRealMutationES11Adaptation(mutation);
+
+                    RealRestartingEvolutionStrategy11 es11 = new RealRestartingEvolutionStrategy11(evaluation, stopCondition, mutationAdaptation, parameter, seed);
+
+                    es11.Run();
+
+                    return ResultToString(problemInfo, method, es11.Result);
+                }
+                else if (method == "PoorMansCMAES")
+                {
+                    List<double> sigmas = Enumerable.Repeat(0.1, evaluation.iSize).ToList();
+                    RealGaussianMutation mutation = new RealGaussianMutation(sigmas, evaluation, seed);
+                    RealNullRealMutationES11Adaptation mutationAdaptation = new RealNullRealMutationES11Adaptation(mutation);
+
+                    PoorMansCMAES pmcmaes = new PoorMansCMAES(evaluation, stopCondition, mutationAdaptation, parameter, seed);
+
+                    pmcmaes.Run();
+
+                    return ResultToString(problemInfo, method, pmcmaes.Result);
+                }
+                else if (method == "CMAES")
+                {
+                    CMAES cmaes = new CMAES(evaluation, stopCondition, 1, seed);
+
+                    cmaes.Run();
+
+                    return ResultToString(problemInfo, method, cmaes.Result);
+                }
+                else
+                {
+                    throw new ArgumentException();
+                }
+            }
+        }
+
+        private static string PrepareExperiment(object parameters)
+        {
+            var p = parameters as (IEvaluation<double>, string, string, int, int, int?)?;
+            if (p.HasValue)
+            {
+                var result = RunExperiment(p.Value.Item1, p.Value.Item2, p.Value.Item3, p.Value.Item4, p.Value.Item5, p.Value.Item6);
+                lock (lockObj)
+                {
+                    progressCounter++;
+                    Console.WriteLine("Progress: {0}/{1} {2}%", progressCounter, totalCounter, 100 * progressCounter / (double)totalCounter);
+                }
+                return result;
+            }
+            else
+            {
+                throw new ArgumentNullException();
+            }
+        }
+
+        private static void RunExperiments(List<(IEvaluation<double>, string)> evaluations, List<string> methods, int maxIterations, int repeats, int start, string filename, int? seed = null)
+        {
+            var results = new List<OptimizationResult<double>>();
+            List<Task<string>> tasks = new List<Task<string>>();
+            lock (lockObj)
+            {
+                foreach(string method in methods)
+                {
+                    foreach (var evaluation in evaluations)
+                    {
+                        for (int i = 0; i < repeats; i++)
+                        {
+                            tasks.Add(new Task<string>(PrepareExperiment, (evaluation.Item1, method, evaluation.Item2, maxIterations, 10, seed)));
+                        }
+                    }
+                }
+                totalCounter = tasks.Count() - start;
+                Console.WriteLine("{0} experiments started...", totalCounter);
+                tasks = tasks.GetRange(start, totalCounter);
+            }
+            foreach (var task in tasks)
+            {
+                task.Start();
+            }
+            StreamWriter sw;
+            if (start == 0)
+            {
+                sw = new StreamWriter(filename);
+                sw.WriteLine("problem;variables;method;fitness;time;iteration;FFE");
+            }
+            else
+            {
+                sw = new StreamWriter(filename, true);
+            }
+            foreach (var task in tasks)
+            {
+                var result = task.Result;
+                sw.WriteLine(result);
+                sw.Flush();
+            }
+            sw.Close();
         }
 
         private static void Lab3CMAES(IEvaluation<double> evaluation, int? seed)
@@ -163,28 +300,55 @@ namespace MetaheuristicsCS
             Lab1BinaryRandomSearch(new CBinaryNKLandscapesEvaluation(10), seed, 500);
         }
 
+        private static int CountLines(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                return File.ReadLines(filename).Count();
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         static void Main(string[] args)
         {
             int? seed = null;
-
-            Lab3SphereCMAES(seed);
-            Lab3Sphere10CMAES(seed);
-            Lab3EllipsoidCMAES(seed);
-            Lab3Step2SphereCMAES(seed);
-            Lab3RastriginCMAES(seed);
-            Lab3AckleyCMAES(seed);
-            Console.ReadKey();
-            /*
-            Lab2Sphere(seed);
-            Lab2Sphere10(seed);
-            Lab2Ellipsoid(seed);
-            Lab2Step2Sphere(seed);
-
-            Lab1OneMax(seed);
-            Lab1StandardDeceptiveConcatenation(seed);
-            Lab1BimodalDeceptiveConcatenation(seed);
-            Lab1IsingSpinGlass(seed);
-            Lab1NkLandscapes(seed);*/
+            List<(IEvaluation<double>, string)> evaluations = new List<(IEvaluation<double>, string)>();
+            List<int> variables = new List<int> { 2, 5, 10 };
+            foreach (int variable in variables)
+            {
+                evaluations.Add((new CRealSphereEvaluation(variable), "sphere;" + variable.ToString()));
+            }
+            foreach (int variable in variables)
+            {
+                evaluations.Add((new CRealSphere10Evaluation(variable), "sphere10;" + variable.ToString()));
+            }
+            foreach (int variable in variables)
+            {
+                evaluations.Add((new CRealEllipsoidEvaluation(variable), "ellipsoid;" + variable.ToString()));
+            }
+            foreach (int variable in variables)
+            {
+                evaluations.Add((new CRealStep2SphereEvaluation(variable), "step2sphere;" + variable.ToString()));
+            }
+            foreach (int variable in variables)
+            {
+                evaluations.Add((new CRealRastriginEvaluation(variable), "rastrigin;" + variable.ToString()));
+            }
+            foreach (int variable in variables)
+            {
+                evaluations.Add((new CRealAckleyEvaluation(variable), "ackley;" + variable.ToString()));
+            }
+            List<string> methods = new List<string> { "RS", "ES11", "RestartingES11", "PoorMansCMAES", "CMAES" };
+            string filename = ".\\CMAES-results.csv";
+            int lines = CountLines(filename) - 1;
+            if (lines < 0)
+            {
+                lines = 0;
+            }
+            RunExperiments(evaluations, methods, 1000, 20, lines, filename, seed);
         }
     }
 }

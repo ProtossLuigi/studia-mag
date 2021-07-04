@@ -1,0 +1,13 @@
+problem;method;cost
+..\..\..\vrps\A-n32-k5.vrp;random;1866.2867930288671
+..\..\..\vrps\A-n32-k5.vrp;greedy;599.6221678974301
+..\..\..\vrps\A-n32-k5.vrp;genetic;502.8468723006663
+..\..\..\vrps\A-n46-k7.vrp;random;2370.0788351789265
+..\..\..\vrps\A-n46-k7.vrp;greedy;685.9226733943235
+..\..\..\vrps\A-n46-k7.vrp;genetic;651.3399011021626
+..\..\..\vrps\A-n61-k9.vrp;random;2894.80907933741
+..\..\..\vrps\A-n61-k9.vrp;greedy;653.7950835840068
+..\..\..\vrps\A-n61-k9.vrp;genetic;794.7832438370491
+..\..\..\vrps\toy.vrp;random;261.4905426773662
+..\..\..\vrps\toy.vrp;greedy;204.44332641696084
+..\..\..\vrps\toy.vrp;genetic;195.02085486132046

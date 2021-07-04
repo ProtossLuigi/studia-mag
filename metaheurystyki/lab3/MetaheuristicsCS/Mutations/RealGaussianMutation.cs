@@ -42,10 +42,12 @@ namespace Mutations
             {
                 if (uniformRNG.Next(Probability))
                 {
+                    double offset;
                     do
                     {
-                        solution[i] += gaussianRNG.Next(0.0, sigmas[i]);
-                    } while (!evaluationProfile.pcConstraint.bIsFeasible(i, solution[i]));
+                        offset = gaussianRNG.Next(0.0, sigmas[i]);
+                    } while (!evaluationProfile.pcConstraint.bIsFeasible(i, solution[i] + offset));
+                    solution[i] += offset;
 
                     successfulMutation = true;
                 }

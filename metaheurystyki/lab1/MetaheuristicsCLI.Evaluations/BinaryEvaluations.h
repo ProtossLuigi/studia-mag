@@ -12,7 +12,7 @@ namespace EvaluationsCLI
 	public ref class CBinaryEvaluation : public IEvaluation<bool>
 	{
 	public:
-		CBinaryEvaluation(Evaluations::CEvaluation<bool> *pcNativeBinaryEvaluation);
+		CBinaryEvaluation(Evaluations::IEvaluation<bool> *pcNativeBinaryEvaluation);
 
 		virtual ~CBinaryEvaluation();
 		!CBinaryEvaluation();
@@ -40,7 +40,7 @@ namespace EvaluationsCLI
 		}//property long long iFFE
 
 	private:
-		Evaluations::CEvaluation<bool> *pc_native_binary_evaluation;
+		Evaluations::IEvaluation<bool> *pc_native_binary_evaluation;
 	};//public ref class CBinaryEvaluation : public IEvaluation<bool>
 
 

@@ -1,0 +1,13 @@
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\bin\Debug\netcoreapp3.1\GAvsTSP.exe
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\bin\Debug\netcoreapp3.1\GAvsTSP.deps.json
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\bin\Debug\netcoreapp3.1\GAvsTSP.runtimeconfig.json
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\bin\Debug\netcoreapp3.1\GAvsTSP.runtimeconfig.dev.json
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\bin\Debug\netcoreapp3.1\GAvsTSP.dll
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\bin\Debug\netcoreapp3.1\GAvsTSP.pdb
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\obj\Debug\netcoreapp3.1\GAvsTSP.csprojAssemblyReference.cache
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\obj\Debug\netcoreapp3.1\GAvsTSP.AssemblyInfoInputs.cache
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\obj\Debug\netcoreapp3.1\GAvsTSP.AssemblyInfo.cs
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\obj\Debug\netcoreapp3.1\GAvsTSP.csproj.CoreCompileInputs.cache
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\obj\Debug\netcoreapp3.1\GAvsTSP.dll
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\obj\Debug\netcoreapp3.1\GAvsTSP.pdb
+C:\Users\Kajetan\studia-mag\ml\lab3\GAvsTSP\obj\Debug\netcoreapp3.1\GAvsTSP.genruntimeconfig.cache

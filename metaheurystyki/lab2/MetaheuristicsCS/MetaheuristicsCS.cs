@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using EvaluationsCLI;
 using Mutations;
 using Optimizers;
@@ -11,12 +13,233 @@ namespace MetaheuristicsCS
 {
     class MetaheuristicsCS
     {
+        private static Object lockObj = new Object();
+        private static int progressCounter = 0;
+        private static int totalCounter;
+
+        private static int CountLines(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                return File.ReadLines(filename).Count();
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        private static string ResultToString<Element>(OptimizationResult<Element> result)
+        {
+            return result.BestValue.ToString() + "\t" + result.BestTime.ToString() + "\t" + result.BestIteration.ToString() + "\t" + result.BestFFE.ToString();
+        }
+
+        private static void LogResults<Element>(string filename, List<OptimizationResult<Element>> results)
+        {
+            StreamWriter sw = new StreamWriter(filename);
+            sw.WriteLine("fitness;time;iteration;FFE");
+            foreach (OptimizationResult<Element> result in results)
+            {
+                sw.WriteLine(ResultToString(result));
+            }
+            sw.Close();
+        }
+
         private static void ReportOptimizationResult<Element>(OptimizationResult<Element> optimizationResult)
         {
             Console.WriteLine("value: {0}", optimizationResult.BestValue);
             Console.WriteLine("\twhen (time): {0}s", optimizationResult.BestTime);
             Console.WriteLine("\twhen (iteration): {0}", optimizationResult.BestIteration);
             Console.WriteLine("\twhen (FFE): {0}", optimizationResult.BestFFE);
+        }
+
+        private static List<double> AdjustSigmas(IEvaluation<double> evaluation, double defaultSigma)
+        {
+            List<double> newSigmas = new List<double>();
+            for (int i=0; i<evaluation.iSize; i++)
+            {
+                double range = evaluation.pcConstraint.tGetUpperBound(i) - evaluation.pcConstraint.tGetLowerBound(i);
+                newSigmas.Add(range * defaultSigma);
+            }
+            return newSigmas;
+        }
+
+        private static OptimizationResult<double> RunExperiment(IEvaluation<double> evaluation, int maxIterations, double sigma, bool adjustSigmas, int adaptation, int? seed = null, int archiveSize = 1, double modifier = 1.0)
+        {
+            lock (evaluation)
+            {
+                IterationsStopCondition stopCondition = new IterationsStopCondition(evaluation.dMaxValue, maxIterations);
+                List<double> sigmas;
+                if (adjustSigmas)
+                {
+                    sigmas = AdjustSigmas(evaluation, sigma);
+                }
+                else
+                {
+                    sigmas = Enumerable.Repeat(sigma, evaluation.iSize).ToList();
+                }
+                RealGaussianMutation mutation = new RealGaussianMutation(sigmas, evaluation, seed);
+                ARealMutationES11Adaptation mutationAdaptation;
+                switch (adaptation)
+                {
+                    case 0:
+                        mutationAdaptation = new RealNullRealMutationES11Adaptation(mutation);
+                        break;
+                    case 1:
+                        mutationAdaptation = new RealOneFifthRuleMutationES11Adaptation(archiveSize, modifier, mutation);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                RealEvolutionStrategy11 es11 = new RealEvolutionStrategy11(evaluation, stopCondition, mutationAdaptation, seed);
+                es11.Run();
+                return es11.Result;
+            }
+        }
+
+        private static OptimizationResult<double> PrepareExperiment(object parameters)
+        {
+            var p = parameters as (IEvaluation<double>, int, double, bool, int, int?, int, double)?;
+            if (p.HasValue)
+            {
+                var result = RunExperiment(p.Value.Item1, p.Value.Item2, p.Value.Item3, p.Value.Item4, p.Value.Item5, p.Value.Item6, p.Value.Item7, p.Value.Item8);
+                lock (lockObj)
+                {
+                    progressCounter++;
+                    Console.WriteLine("Progress: {0}/{1} {2}%", progressCounter, totalCounter, 100 * progressCounter / (double)totalCounter);
+                }
+                return result;
+            }
+            else
+            {
+                throw new ArgumentNullException();
+            }
+        }
+
+        private static List<OptimizationResult<double>> RunExperiments(List<IEvaluation<double>> evaluations, int maxIterations, int repeats, int start, int? seed = null)
+        {
+            var results = new List<OptimizationResult<double>>();
+            List<Task<OptimizationResult<double>>> tasks = new List<Task<OptimizationResult<double>>>();
+            lock (lockObj)
+            {
+                foreach (IEvaluation<double> evaluation in evaluations)
+                {
+                    for (int i=0; i<repeats; i++)
+                    {
+                        tasks.Add(new Task<OptimizationResult<double>>(PrepareExperiment, (evaluation, maxIterations, 0.1, false, 0, seed, 1, 1.0)));
+                    }
+                }
+                foreach (IEvaluation<double> evaluation in evaluations)
+                {
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        tasks.Add(new Task<OptimizationResult<double>>(PrepareExperiment, (evaluation, maxIterations, 0.1, false, 1, seed, 1, 2.0)));
+                    }
+                }
+                foreach (IEvaluation<double> evaluation in evaluations)
+                {
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        tasks.Add(new Task<OptimizationResult<double>>(PrepareExperiment, (evaluation, maxIterations, 0.1, false, 1, seed, 10, 2.0)));
+                    }
+                }
+                foreach (IEvaluation<double> evaluation in evaluations)
+                {
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        tasks.Add(new Task<OptimizationResult<double>>(PrepareExperiment, (evaluation, maxIterations, 0.01, true, 1, seed, 10, 2.0)));
+                    }
+                }
+                totalCounter = tasks.Count() - start;
+                Console.WriteLine("{0} experiments started...", totalCounter);
+                tasks = tasks.GetRange(start, totalCounter);
+            }
+            foreach (var task in tasks)
+            {
+                task.Start();
+            }
+            StreamWriter sw;
+            if (start == 0)
+            {
+                sw = new StreamWriter(".\\ES11-results.csv");
+                sw.WriteLine("fitness\ttime\titeration\tFFE");
+            }
+            else
+            {
+                sw = new StreamWriter(".\\ES11-results.csv", true);
+            }
+            foreach (var task in tasks)
+            {
+                var result = task.Result;
+                results.Add(result);
+                sw.WriteLine(ResultToString(result));
+                sw.Flush();
+            }
+            sw.Close();
+            return results;
+        }
+
+        private static List<OptimizationResult<double>> RunExperimentsSynchronously(List<IEvaluation<double>> evaluations, int maxIterations, int repeats, int start, int? seed = null)
+        {
+            var results = new List<OptimizationResult<double>>();
+            List<Task<OptimizationResult<double>>> tasks = new List<Task<OptimizationResult<double>>>();
+            lock (lockObj)
+            {
+                foreach (IEvaluation<double> evaluation in evaluations)
+                {
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        tasks.Add(new Task<OptimizationResult<double>>(PrepareExperiment, (evaluation, maxIterations, 0.01, false, 0, seed, 1, 1.0)));
+                    }
+                }
+                foreach (IEvaluation<double> evaluation in evaluations)
+                {
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        tasks.Add(new Task<OptimizationResult<double>>(PrepareExperiment, (evaluation, maxIterations, 0.01, false, 1, seed, 1, 2.0)));
+                    }
+                }
+                foreach (IEvaluation<double> evaluation in evaluations)
+                {
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        tasks.Add(new Task<OptimizationResult<double>>(PrepareExperiment, (evaluation, maxIterations, 0.01, false, 1, seed, 10, 2.0)));
+                    }
+                }
+                foreach (IEvaluation<double> evaluation in evaluations)
+                {
+                    for (int i = 0; i < repeats; i++)
+                    {
+                        tasks.Add(new Task<OptimizationResult<double>>(PrepareExperiment, (evaluation, maxIterations, 0.01, true, 1, seed, 10, 2.0)));
+                    }
+                }
+                totalCounter = tasks.Count() - start;
+                Console.WriteLine("{0} experiments started...", totalCounter);
+                tasks = tasks.GetRange(start, totalCounter);
+            }
+            foreach (var task in tasks)
+            {
+                task.RunSynchronously();
+            }
+            StreamWriter sw;
+            if (start == 0)
+            {
+                sw = new StreamWriter(".\\ES11-results.csv");
+                sw.WriteLine("fitness\ttime\titeration\tFFE");
+            }
+            else
+            {
+                sw = new StreamWriter(".\\ES11-results.csv", true);
+            }
+            foreach (var task in tasks)
+            {
+                var result = task.Result;
+                results.Add(result);
+                sw.WriteLine(ResultToString(result));
+                sw.Flush();
+            }
+            sw.Close();
+            return results;
         }
 
         private static void Lab2Sphere(int? seed, int variables)
@@ -87,57 +310,36 @@ namespace MetaheuristicsCS
             ReportOptimizationResult(es11.Result);
         }
 
-        private static void Lab1BinaryRandomSearch(IEvaluation<bool> evaluation, int? seed, int maxIterationNumber)
-        {
-            IterationsStopCondition stopCondition = new IterationsStopCondition(evaluation.dMaxValue, maxIterationNumber);
-            BinaryRandomSearch randomSearch = new BinaryRandomSearch(evaluation, stopCondition, seed);
-
-            randomSearch.Run();
-
-            ReportOptimizationResult(randomSearch.Result);
-        }
-
-        private static void Lab1OneMax(int? seed)
-        {
-            Lab1BinaryRandomSearch(new CBinaryOneMaxEvaluation(5), seed, 500);
-        }
-
-        private static void Lab1StandardDeceptiveConcatenation(int? seed)
-        {
-            Lab1BinaryRandomSearch(new CBinaryStandardDeceptiveConcatenationEvaluation(5, 1), seed, 500);
-        }
-
-        private static void Lab1BimodalDeceptiveConcatenation(int? seed)
-        {
-            Lab1BinaryRandomSearch(new CBinaryBimodalDeceptiveConcatenationEvaluation(10, 1), seed, 500);
-        }
-
-        private static void Lab1IsingSpinGlass(int? seed)
-        {
-            Lab1BinaryRandomSearch(new CBinaryIsingSpinGlassEvaluation(25), seed, 500);
-        }
-
-        private static void Lab1NkLandscapes(int? seed)
-        {
-            Lab1BinaryRandomSearch(new CBinaryNKLandscapesEvaluation(10), seed, 500);
-        }
-
         static void Main(string[] args)
         {
             int? seed = null;
-
-            Lab2Sphere(seed, 2);
-            Lab2Sphere(seed, 5);
-            Lab2Sphere(seed, 10);
-            Lab2Sphere10(seed, 2);
-            Lab2Sphere10(seed, 5);
-            Lab2Sphere10(seed, 10);
-            Lab2Ellipsoid(seed, 2);
-            Lab2Ellipsoid(seed, 5);
-            Lab2Ellipsoid(seed, 10);
-            Lab2Step2Sphere(seed, 2);
-            Lab2Step2Sphere(seed, 5);
-            Lab2Step2Sphere(seed, 10);
+            List < IEvaluation<double> > evaluations = new List<IEvaluation<double>>();
+            List<int> variables = new List<int> { 2, 5, 10 };
+            foreach (int variable in variables)
+            {
+                evaluations.Add(new CRealSphereEvaluation(variable));
+            }
+            foreach (int variable in variables)
+            {
+                evaluations.Add(new CRealSphere10Evaluation(variable));
+            }
+            foreach (int variable in variables)
+            {
+                evaluations.Add(new CRealEllipsoidEvaluation(variable));
+            }
+            foreach (int variable in variables)
+            {
+                evaluations.Add(new CRealStep2SphereEvaluation(variable));
+            }
+            string filename = ".\\ES11-results.csv";
+            int lines = CountLines(".\\ES11-results.csv") - 1;
+            if (lines < 0)
+            {
+                lines = 0;
+            }
+            List<OptimizationResult<double>> results = RunExperiments(evaluations, 500, 20, lines, seed);
+            //Console.WriteLine("Experiments complete. Writing results to file...");
+            //LogResults(".\\ES11-results.csv", results);
         }
     }
 }
