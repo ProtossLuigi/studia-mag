@@ -5,3 +5,4 @@ BacteriaKaggle
 .gitignore
 nlp/annotated/wzorcowy.txt
 nlp/template/anotowany.txt
+__pycache__
