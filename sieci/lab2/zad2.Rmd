@@ -1,0 +1,133 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(igraph)
+```
+
+
+
+Inicjowanie grafu Erdos-Renyi
+```{r}
+g <- erdos.renyi.game(100, 0.03)
+```
+```{r}
+V(g)
+```
+```{r}
+get.edgelist(g)
+```
+```{r}
+nrow(get.edgelist(g))
+```
+
+Dodanie wag
+```{r}
+E(g)$weight <- runif(nrow(get.edgelist(g)), 0.01, 1)
+```
+
+
+```{r}
+E(g)$weight
+```
+
+Pomiar clustering coefficient
+```{r}
+transitivity(g, type="local")
+```
+```{r}
+library(ggplot2)
+p <- ggplot(data.frame(value=transitivity(g, type="local")), aes(x=value)) + geom_histogram()
+p
+```
+Znaliza komponentów.
+```{r}
+components(g)
+```
+Jak widać graf składa się z jednego dużego komponentu i 9 wierzchołków do których nie dochodzą żadne krawędzie.
+
+Wykres grafu uwzględniający stopień wierzchołków.
+```{r}
+plot(g, vertex.size=degree(g)*2)
+```
+Inicjalizacja grafu Barabasi-Albert
+```{r}
+g = ba.game(n=1000, m=3)
+```
+
+
+```{r fig.width=10, fig.height=10}
+plot(g, layout=layout_with_fr(g), vertex.size=5)
+```
+Najbardziej centralny wierzchołek według miary bliskości.
+```{r}
+which.max(closeness(g))
+```
+Średnica
+```{r}
+diameter(g, directed = FALSE)
+```
+Różnica pomiędzy grafem Erdos-Renyi, a Barabasi-Albert, polega na generowaniu krawędzi. W Erdos-Renyi istnienie każdej krawędzi jest losowane osobno, tymczasem w Barabasi-Albert ilość krawędzi generowanych do każdego nowego wierzchołka jest stała, więc np. nie może zaistnieć sytuacja, gdzie do wierzchołka nie dochodzą żadne krawędzie.
+
+Wczytywanie grafu
+```{r}
+df <- read.csv("arenas-meta/out.arenas-meta", sep="\t", skip = 1)
+g <- graph_from_data_frame(df, directed = FALSE)
+```
+```{r}
+V(g)
+```
+```{r}
+E(g)
+```
+
+```{r}
+unique(E(g))
+```
+Jak widać sieć już nie miała zduplikowanych krawędzi.
+
+Histogram stopni wierzchołków.
+```{r}
+ggplot(as.data.frame(table(degree(g))), aes(x = Freq)) + geom_histogram()
+```
+Histogram betweenness.
+```{r}
+ggplot(as.data.frame(table(betweenness(g))), aes(x = Freq)) + geom_histogram()
+```
+Histogram closeness.
+```{r}
+ggplot(as.data.frame(table(closeness(g))), aes(x = Freq)) + geom_histogram()
+```
+Porównanie metryk miarą kendalla.
+```{r}
+df <- as.data.frame(degree(g))
+df["betweenness"] <- as.data.frame(betweenness(g))
+df["closeness"] <- as.data.frame(closeness(g))
+cor(df, method = c("kendall"))
+```
+Jak widać istnieje korelacja pomiędzy tymi metrykami, ale closeness korelujje słabo.
+
+Graf jest spójny.
+```{r}
+components(g)
+```
+Średnica i średnia długość scieżki.
+```{r}
+print(diameter(g))
+print(average.path.length(g, directed = FALSE))
+```
+Najdłuższa ścieżka jest znacznie dłuższa od średniej, co też widać na histogramie.
+```{r}
+df <- as.data.frame(shortest.paths(g))
+vals <- list()
+l <- 1
+for (i in colnames(df)){
+  vals[l] <- as.list(df[i])
+  l <- l+1
+}
+vals <- unlist(vals)
+```
+```{r}
+ggplot(as.data.frame(vals), aes(x = vals)) + geom_histogram()
+```
