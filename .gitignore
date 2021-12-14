@@ -18,3 +18,6 @@ nlp/sample_m2.bin
 nlp/3.zip
 analiza_i_przetwarzanie_obrazow/lab9/natural_images_postprocessed/
 analiza_i_przetwarzanie_obrazow/lab9/test_images/
+nlp/corpora/
+nlp/wbst/
+nlp/dist_models/
